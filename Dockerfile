@@ -5,7 +5,7 @@ ARG BASE_DEBIAN=bookworm-slim
 # We utilize this small alpine layer to cache the downloaded xampp installer
 ################################################################################
 FROM alpine/curl as xampp_downloader
-ARG XAMPP_URL
+ARG XAMPP_URL=https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run
 RUN curl -Lo xampp-linux-installer.run $XAMPP_URL
 
 ################################################################################
@@ -17,13 +17,13 @@ LABEL maintainer="Tomas Jasek<tomsik68 (at) gmail (dot) com>"
 ENV DEBIAN_FRONTEND noninteractive
 
 # Set root password to root, format is 'user:password'.
-RUN echo 'root:root' | chpasswd
+RUN echo 'root:justmonika' | chpasswd
 
 # See https://docs.docker.com/develop/develop-images/instructions/#apt-get for apt-get guidelines
 RUN apt-get update --fix-missing && \
   # curl is needed to download the xampp installer, net-tools provides netstat command for xampp
   apt-get install -y --no-install-recommends curl net-tools openssh-server \
-      supervisor nano vim less && \
+  supervisor nano vim less && \
   rm -rf /var/lib/apt/lists/*
 
 COPY --from=xampp_downloader xampp-linux-installer.run .
